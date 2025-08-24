@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // 日付フォーマットのために追加
 import '../data/database_helper.dart';
 import '../domain/note.dart';
 import 'note_edit_screen.dart';
@@ -39,22 +40,25 @@ class _NoteListScreenState extends State<NoteListScreen> {
     _refreshNotes();
   }
 
-  // メモの1行目を取得するヘルパー関数
   String _getTitle(String content) {
     if (content.isEmpty) return '（タイトルなし）';
     final lines = content.split('\n');
     return lines.first.isNotEmpty ? lines.first : '（タイトルなし）';
   }
 
-  // メモの2行目以降を取得するヘルパー関数
   String _getSubtitle(String content) {
     if (content.isEmpty) return '';
     final lines = content.split('\n');
     if (lines.length > 1) {
       return lines.sublist(1).join('\n').trim();
     } else {
-      return ''; // 2行目以降がない場合は空
+      return '';
     }
+  }
+
+  String _formatDateTime(DateTime dt) {
+    // YYYY/MM/dd HH:mm 形式でフォーマット
+    return DateFormat('yyyy/MM/dd HH:mm').format(dt);
   }
 
   @override
@@ -79,20 +83,53 @@ class _NoteListScreenState extends State<NoteListScreen> {
           final notes = snapshot.data!;
 
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
             itemCount: notes.length,
             itemBuilder: (context, index) {
               final note = notes[index];
-              return ListTile(
-                title: Text(
-                  _getTitle(note.content),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                child: InkWell(
+                  onTap: () => _navigateAndRefresh(context, note: note),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getTitle(note.content),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _getSubtitle(note.content),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[800],
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            _formatDateTime(note.createdAt),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                subtitle: Text(
-                  _getSubtitle(note.content),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onTap: () => _navigateAndRefresh(context, note: note),
               );
             },
           );
