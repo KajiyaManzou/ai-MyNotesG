@@ -5,12 +5,12 @@
 ## フェーズ1: MVP機能の実装
 
 ### 1.1. 環境構築・プロジェクト設定
-- [ ] Flutter SDK のインストールとパス設定
-- [ ] Xcode / Android Studio のセットアップと動作確認
-- [ ] `flutter create ai_my_notes` でプロジェクトを作成
-- [ ] プロジェクトのディレクトリ構成を決定 (lib/src, lib/src/ui, lib/src/domain, lib/src/data)
-- [ ] `pubspec.yaml` に必要なライブラリを追加 (sqflite, path_provider など)
-- [ ] Linter (`analysis_options.yaml`) の設定
+- [x] Flutter SDK のインストールとパス設定
+- [x] Xcode / Android Studio のセットアップと動作確認
+- [x] `flutter create ai_my_notes` でプロジェクトを作成
+- [x] プロジェクトのディレクトリ構成を決定 (lib/src, lib/src/ui, lib/src/domain, lib/src/data)
+- [x] `pubspec.yaml` に必要なライブラリを追加 (sqflite, path_provider など)
+- [x] Linter (`analysis_options.yaml`) の設定
 
 ### 1.2. データベース層 (レイヤー) の実装
 - [ ] データベースヘルパークラス (`database_helper.dart`) の作成
