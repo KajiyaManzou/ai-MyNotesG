@@ -85,7 +85,7 @@ ai-MyNotes
 *   定数名は大文字
 *   メソッド、関数のサイクロマティック複雑度は10以下とする
 *   if文、while文のネストは極力避ける
-*   switch文は極力使用しない
+*   不必要に複雑なswitch文は避ける
 
 ### 4.5 プログラム階層
 *   3階層構成
@@ -105,7 +105,7 @@ ai-MyNotes
 
 ### 4.7 テスト
 *   **単体テスト**: Dart テスト　メソッド単位にテスト実施
-*   **実装テスト**: シュミレーター実行　担当者が動作確認実施
+*   **ユーザー受け入れテスト**: シュミレーター実行　担当者が動作確認実施
 
 ### 4.8 テーブル設計
 
@@ -115,7 +115,6 @@ ai-MyNotes
 erDiagram
     notes {
         INTEGER id PK "PRIMARY KEY, AUTOINCREMENT"
-        TEXT title "NOT NULL"
         TEXT content "メモの本文"
         DATETIME created_at "作成日時, DEFAULT CURRENT_TIMESTAMP"
         DATETIME updated_at "更新日時, DEFAULT CURRENT_TIMESTAMP"
@@ -124,7 +123,6 @@ erDiagram
 #### テーブル構造の説明
 ##### notes テーブル
 - id: 主キー（PRIMARY KEY）、自動インクリメント
-- title: メモのタイトル（必須項目）
 - content: メモの本文内容
 - created_at: 作成日時（デフォルト値：現在時刻）
 - updated_at: 更新日時（デフォルト値：現在時刻）
