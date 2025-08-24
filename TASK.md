@@ -13,14 +13,14 @@
 - [x] Linter (`analysis_options.yaml`) の設定
 
 ### 1.2. データベース層 (レイヤー) の実装
-- [ ] データベースヘルパークラス (`database_helper.dart`) の作成
-- [ ] DB接続と `notes` テーブルを作成する初期化処理の実装
-- [ ] Noteモデルクラス (`note.dart`) の作成 (Value Object)
-- [ ] メモをDBに追加するメソッドの実装 (Create)
-- [ ] IDでメモをDBから取得するメソッドの実装 (Read)
-- [ ] 全てのメモをDBから取得するメソッドの実装 (Read)
-- [ ] メモをDBで更新するメソッドの実装 (Update)
-- [ ] メモをDBから削除するメソッドの実装 (Delete)
+- [x] データベースヘルパークラス (`database_helper.dart`) の作成
+- [x] DB接続と `notes` テーブルを作成する初期化処理の実装
+- [x] Noteモデルクラス (`note.dart`) の作成 (Value Object)
+- [x] メモをDBに追加するメソッドの実装 (Create)
+- [x] IDでメモをDBから取得するメソッドの実装 (Read)
+- [x] 全てのメモをDBから取得するメソッドの実装 (Read)
+- [x] メモをDBで更新するメソッドの実装 (Update)
+- [x] メモをDBから削除するメソッドの実装 (Delete)
 
 ### 1.3. UI層 (レイヤー) とドメインロジックの実装
 
