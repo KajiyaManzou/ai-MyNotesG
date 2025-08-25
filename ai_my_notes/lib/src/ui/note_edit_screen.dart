@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../data/database_helper.dart';
 import '../domain/note.dart';
@@ -14,50 +16,83 @@ class NoteEditScreen extends StatefulWidget {
 
 class _NoteEditScreenState extends State<NoteEditScreen> {
   late final TextEditingController _controller;
-  late String _initialContent;
+  Timer? _debounce;
+  bool _isSaving = false;
+  
+  // widget.note をステートとして持つ
+  Note? _note;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.note?.content ?? '');
-    _initialContent = widget.note?.content ?? '';
+    _note = widget.note;
+    _controller = TextEditingController(text: _note?.content ?? '');
+    _controller.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
-    _saveNote();
+    _debounce?.cancel();
+    // 画面が破棄される直前に、最後の変更を確実に保存する
+    _saveNote(force: true);
     _controller.dispose();
     super.dispose();
   }
 
-  Future<void> _saveNote() async {
+  void _onTextChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _saveNote();
+    });
+  }
+
+  Future<void> _saveNote({bool force = false}) async {
     final content = _controller.text;
 
-    // 内容が空、または変更がない場合は何もしない
-    if (content.isEmpty || content == _initialContent) {
-      // ただし、新規作成で内容が空の場合は、DBにレコードが作られないようにする
-      if (widget.note == null && content.isEmpty) {
-        return;
-      }
+    // 強制保存でない場合、内容が空なら何もしない
+    if (!force && content.isEmpty) {
+      return;
+    }
+    
+    // 変更がない場合は何もしない
+    if (_note != null && content == _note!.content) {
+      return;
+    }
+
+    if (mounted && !force) {
+      setState(() {
+        _isSaving = true;
+      });
     }
 
     final now = DateTime.now();
 
-    if (widget.note == null) {
+    if (_note == null) {
       // 新規作成
       final newNote = Note(
         content: content,
         createdAt: now,
         updatedAt: now,
       );
-      await widget.databaseHelper.create(newNote);
+      // insert した note には id がセットされる
+      final savedNote = await widget.databaseHelper.create(newNote);
+      // state を更新して、次回以降が更新になるようにする
+      _note = savedNote;
+
     } else {
       // 更新
-      final updatedNote = widget.note!.copyWith(
+      final updatedNote = _note!.copyWith(
         content: content,
         updatedAt: now,
       );
       await widget.databaseHelper.update(updatedNote);
+      _note = updatedNote;
+    }
+
+    if (mounted && !force) {
+      setState(() {
+        _isSaving = false;
+      });
     }
   }
 
@@ -65,12 +100,19 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // 戻るボタンが押されたときにも保存処理が走るようにする
-        leading: BackButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        actions: [
+          if (_isSaving)
+            const Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2.0),
+                ),
+              ),
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
